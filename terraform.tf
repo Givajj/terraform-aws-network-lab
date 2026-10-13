@@ -9,4 +9,12 @@ terraform {
 
 provider "aws" {
   region = var.region_lab
+
+  default_tags {
+    tags = {
+    Project = "terraform-aws-network-lab"
+    Environment = "lab"
+    ManagedBy = "Terraform"
+    }
+  }
 }
