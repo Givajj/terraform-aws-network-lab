@@ -4,6 +4,7 @@ resource "aws_instance" "ec2_dmz" {
 
   subnet_id              = aws_subnet.subnet_dmz.id
   vpc_security_group_ids = [aws_security_group.sg_dmz.id]
+  associate_public_ip_address = true
 
   tags = {
     Name = "ec2_dmz_linux"
