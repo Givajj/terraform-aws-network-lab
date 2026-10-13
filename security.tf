@@ -60,3 +60,23 @@ resource "aws_vpc_security_group_ingress_rule" "sg_bd_12555" {
   to_port     = 12555
   ip_protocol = "tcp"
 }
+
+
+#Regras de saída dos Security Groups para acesso externo
+resource "aws_vpc_security_group_egress_rule" "sg_dmz_egress" {
+  security_group_id = aws_security_group.sg_dmz.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+resource "aws_vpc_security_group_egress_rule" "sg_app_egress" {
+  security_group_id = aws_security_group.sg_app.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+resource "aws_vpc_security_group_egress_rule" "sg_bd_egress" {
+  security_group_id = aws_security_group.sg_bd.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
