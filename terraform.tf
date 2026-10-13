@@ -12,9 +12,9 @@ provider "aws" {
 
   default_tags {
     tags = {
-    Project = "terraform-aws-network-lab"
-    Environment = "lab"
-    ManagedBy = "Terraform"
+      Project     = "terraform-aws-network-lab"
+      Environment = "lab"
+      ManagedBy   = "Terraform"
     }
   }
 }

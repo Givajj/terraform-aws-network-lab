@@ -53,7 +53,7 @@ resource "aws_security_group" "sg_bd" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "sg_bd_12555" {
-  security_group_id            = aws_security_group.sg_bd
+  security_group_id            = aws_security_group.sg_bd.id
   referenced_security_group_id = aws_security_group.sg_app.id
 
   from_port   = 12555
