@@ -102,3 +102,114 @@ resource "aws_route_table_association" "bd_rtb_assoc" {
   subnet_id      = aws_subnet.subnet_bd.id
   route_table_id = aws_route_table.bd_rtb.id
 }
+
+resource "aws_security_group" "sg_dmz" {
+  name        = "dmz_sg"
+  description = "Security group DMZ"
+  vpc_id      = aws_vpc.vpc_lab.id
+  tags = {
+    Name = "dmz_sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "sg_dmz_ssh" {
+  security_group_id = aws_security_group.sg_dmz.id
+  cidr_ipv4         = "0.0.0.0/16"
+  from_port         = 22
+  to_port           = 22
+  ip_protocol       = "tcp"
+}
+
+resource "aws_security_group" "sg_app" {
+  name        = "app_sg"
+  description = "Security group APP"
+  vpc_id      = aws_vpc.vpc_lab.id
+  tags = {
+    Name = "app_sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "sg_app_ssh" {
+  security_group_id            = aws_security_group.sg_app.id
+  referenced_security_group_id = aws_security_group.sg_dmz.id
+
+  from_port   = 22
+  to_port     = 22
+  ip_protocol = "tcp"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "sg_app_rdp" {
+  security_group_id            = aws_security_group.sg_app.id
+  referenced_security_group_id = aws_security_group.sg_dmz.id
+
+  from_port   = 3389
+  to_port     = 3389
+  ip_protocol = "tcp"
+}
+
+resource "aws_security_group" "sg_bd" {
+  name        = "bd_sg"
+  description = "Security group BD"
+  vpc_id      = aws_vpc.vpc_lab.id
+  tags = {
+    Name = "bd_sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "sg_bd_12555" {
+  security_group_id            = aws_security_group.sg_bd
+  referenced_security_group_id = aws_security_group.sg_app.id
+
+  from_port   = 12555
+  to_port     = 12555
+  ip_protocol = "tcp"
+}
+
+resource "aws_instance" "ec2_dmz" {
+  ami           = "ami-097855b862d5b1eb2"
+  instance_type = "t3.micro"
+
+  subnet_id              = aws_subnet.subnet_dmz.id
+  vpc_security_group_ids = [aws_security_group.sg_dmz.id]
+
+  tags = {
+    Name = "ec2_dmz_linux"
+  }
+}
+
+resource "aws_instance" "ec2_app_linux" {
+  ami           = "ami-097855b862d5b1eb2"
+  instance_type = "t3.micro"
+
+  subnet_id              = aws_subnet.subnet_app.id
+  vpc_security_group_ids = [aws_security_group.sg_app.id]
+
+  tags = {
+    Name = "ec2_app_linux"
+  }
+}
+
+resource "aws_instance" "ec2_app_windows" {
+  ami           = "ami-00d8aa800578d8b12"
+  instance_type = "t3.micro"
+
+  subnet_id              = aws_subnet.subnet_app.id
+  vpc_security_group_ids = [aws_security_group.sg_app.id]
+
+  tags = {
+    Name = "ec2_app_windows"
+  }
+}
+
+resource "aws_instance" "ec2_bd_linux" {
+  ami           = "ami-097855b862d5b1eb2"
+  instance_type = "t3.micro"
+
+  subnet_id              = aws_subnet.subnet_bd.id
+  vpc_security_group_ids = [aws_security_group.sg_bd.id]
+
+  tags = {
+    Name = "ec2_bd_linux"
+  }
+}
+
